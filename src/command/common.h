@@ -2,12 +2,15 @@
 #define common_INCLUDED
 
 
-/* wsend(cport_nr,"*RST\n"); */
+int set_RST(int cport_nr);
 
-/* wsend(cport_nr, "*CLS\n"); */
+/*Clear event register*/
+int set_CLS(int cport_nr);
 
-/* wsend(cport_nr,"*ESE 1\n"); */
+/*Set ESE register*/
+int set_ESE(int cport_nr, int bit);
 
-/* wsend(cport_nr,"*SRE 32\n"); */
+/*Set SRE register*/
+int set_SRE(int cport_nr, int bit);
 
 #endif
