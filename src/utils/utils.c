@@ -1,3 +1,10 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+
+#include <rs232/rs232.h>
+
 #include "utils.h"
 
 #define sleep 1000000

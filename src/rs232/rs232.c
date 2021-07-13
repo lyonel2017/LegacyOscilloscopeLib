@@ -3,6 +3,20 @@
   http://man7.org/linux/man-pages/man4/tty_ioctl.4.html
 */
 
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <termios.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+
+#include <sys/stat.h>
+#include <limits.h>
+#include <sys/file.h>
+
 #include "rs232.h"
 
 int RS232_OpenComport(){
@@ -130,8 +144,6 @@ int RS232_SendBuf(int fd, unsigned char *buf, int size){
   }
   return(n);
 }
-
-
 
 int RS232_IsDCDEnabled(int fd){
   int status;

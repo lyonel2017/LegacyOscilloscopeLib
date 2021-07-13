@@ -1,7 +1,7 @@
 #ifndef common_INCLUDED
 #define common_INCLUDED
 
-
+/*Set instrument to preset state*/
 int set_RST(int cport_nr);
 
 /*Clear event register*/

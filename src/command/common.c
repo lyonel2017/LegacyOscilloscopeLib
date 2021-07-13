@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <utils/utils.h>
+
 #include "common.h"
 
 int set_RST(int cport_nr){

@@ -1,3 +1,9 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+
+#include <utils/utils.h>
+
 #include "waveform.h"
 
 int get_waveform_data(int cport_nr, char* t){
