@@ -4,6 +4,7 @@
 # make and build files
 *.lst
 *.o
+*a
 *.eep
 *.lss
 *.map
