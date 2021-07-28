@@ -2,6 +2,8 @@
 PROJDIR := $(realpath $(CURDIR))
 SOURCEDIR := $(PROJDIR)/src
 BUILDDIR := $(PROJDIR)/build
+PINCLUDES := $(PROJDIR)/include
+TESTDIR := $(PROJDIR)/tests
 
 # Name of the final executable
 TARGET = libhp54600b.a
@@ -61,12 +63,13 @@ endef
 
 all: directories $(TARGET)
 
-test:
-	@echo test
+test: all $(TESTDIR)/demo.c
+	@echo Building test
+	$(HIDE)$(CC) -I$(PINCLUDES) -o $(TESTDIR)/demo.out -L $(BUILDDIR)  $(TESTDIR)/demo.c -lhp54600b
 
 $(TARGET): $(OBJS)
 	@echo Linking $@
-	$(HIDE)ar rcs $(TARGET) $(OBJS)
+	$(HIDE)ar rcs $(BUILDDIR)/$(TARGET) $(OBJS)
 
 # Include dependencies
 -include $(DEPS)
@@ -80,5 +83,6 @@ directories:
 # Remove all objects, dependencies and executable files generated during the build
 clean:
 	$(HIDE)$(RMDIR) $(subst /,$(PSEP),$(TARGETDIRS)) $(ERRIGNORE)
-	$(HIDE)$(RM) $(TARGET) $(ERRIGNORE)
+	$(HIDE)$(RM) $(BUILDDIR)/$(TARGET) $(ERRIGNORE)
+	$(HIDE)$(RM) $(TESTDIR)//demo.out $(ERRIGNORE)
 	@echo Cleaning done !

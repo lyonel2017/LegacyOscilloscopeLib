@@ -2,38 +2,57 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
+#include <unistd.h>
 
 #include <hp54600b.h>
 
-int opengnuplot(FILE** gnuplotPipe, FILE** temp){
-  *temp = fopen("data.temp", "w");
+int opengnuplot(FILE** gnuplotPipe){
   *gnuplotPipe = popen ("gnuplot -persistent", "w");
 
   fprintf(*gnuplotPipe, "%s \n", "set title \"HP 54600B\"");
+  fflush(*gnuplotPipe);
+
+  return 0;
+}
+
+int closegnuplot(FILE* gnuplotPipe){
+  pclose(gnuplotPipe);
   return 0;
 }
 
 //https://doc.ubuntu-fr.org/gnuplot
-int gnuplot(char* t, int n, FILE* gnuplotPipe, FILE* temp){
+int gnuplot(char* t, int n, FILE* gnuplotPipe){
   int i;
+  FILE* temp = fopen("data.temp", "w");
 
   for (i=0; i < n; i++){
     fprintf(temp, "%d %d \n", i,(int) t[i]); //Write the data to a temporary file
   }
 
+  fclose(temp);
+
   fprintf(gnuplotPipe, "%s \n", "plot 'data.temp' with lines");
+  fflush(gnuplotPipe);
+  sleep(2);
+
   return 0;
 }
 
 //https://stackoverflow.com/questions/28443868/how-to-automatically-replot-a-graph-every-few-seconds-in-gnuplot
-int gnureplot(char* t, int n, FILE* gnuplotPipe, FILE* temp){
+int gnureplot(char* t, int n, FILE* gnuplotPipe){
   int i;
+
+  FILE* temp = fopen("data.temp", "w");
 
   for (i=0; i < n; i++){
     fprintf(temp, "%d %d \n", i,(int) t[i]); //Write the data to a temporary file
   }
 
+  fclose(temp);
+
   fprintf(gnuplotPipe, "%s \n", "replot");
+  fflush(gnuplotPipe);
+
   return 0;
 }
 
@@ -44,42 +63,35 @@ int main(){
   int m;
   int cport_nr = RS232_OpenComport();
 
-  FILE* temp;
-  FILE* gnuplotPipe;
-
   if(cport_nr == -1){
     return 0;
   }
 
-  /* wsend(cport_nr,"*RST\n"); */
+  FILE* gnuplotPipe;
+
+  opengnuplot(&gnuplotPipe);
 
   set_RST(cport_nr);
-
-  /* wsend(cport_nr, "*CLS\n"); */
-
   set_CLS(cport_nr);
-
-  /* wsend(cport_nr,"*ESE 1\n"); */
-
   set_ESE(cport_nr, 0);
-
-  /* wsend(cport_nr,"*SRE 32\n"); */
-
   set_SRE(cport_nr, 4);
 
-  /* bsend(cport_nr,":AUTOSCALE;*OPC?\n"); */
+  bsend(cport_nr,":AUTOSCALE;*OPC?\n");
 
-  set_waveform_source(cport_nr, 1);
-
+  set_waveform_source(cport_nr, 2);
   set_waveform_format(cport_nr);
-
   set_waveform_points(cport_nr,100);
 
+  if(get_waveform_data(cport_nr,t) != 0) return -1;
+  gnuplot(t,100,gnuplotPipe);
 
-  // opengnuplot(&gnuplotPipe, &temp);
-
-  get_waveform_data(cport_nr,t);
-  //    gnuplot(t,100,gnuplotPipe,temp);
+  int i = 0;
+  while(i < 10){
+    if(get_waveform_data(cport_nr,t) != 0) return -1;
+    gnureplot(t,100,gnuplotPipe);
+    i++;
+  }
+  closegnuplot(gnuplotPipe);
 
   RS232_CloseComport(cport_nr);
 
