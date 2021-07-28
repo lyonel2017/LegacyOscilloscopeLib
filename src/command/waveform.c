@@ -8,9 +8,9 @@
 
 int get_waveform_data(int cport_nr, char* t){
 
-  send(cport_nr, ":WAVEFORM:DATA?\n");
+  if(send(cport_nr, ":WAVEFORM:DATA?\n") != 0) return -1;
 
-  read_data_block(cport_nr, t);
+  if(read_data_block(cport_nr, t) != 0) return -1;
 
   return 0;
 }
