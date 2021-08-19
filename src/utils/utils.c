@@ -32,7 +32,6 @@ int wsend(int cport_nr, unsigned char* buff){
   return 0;
 }
 
-// read can have e verbose print printing what have been read in case of fail or always
 int read_data (int cport_nr, int count, char* buff2){
   int m = 0;
   int n;
@@ -72,14 +71,16 @@ int bsend(int cport_nr, unsigned char* buff){
   }
 
   if(read_data(cport_nr,3,buff2) == -1){
-    printf("bsend:read_data: Fail receiving confirmation of work completion:: Fail sending string %s\n", buff );
+    printf("bsend:read_data: Fail receiving confirmation of "
+           "work completion:: Fail sending string %s\n", buff );
     return -1;
   }
 
   //chech the 3 caracter
 
   if(!(buff2[0] == '+' && buff2[1] == '1')){
-    printf("bsend: Receive non conform confirmation of work completion:: Fail sending string %s\n", buff );
+    printf("bsend: Receive non conform confirmation of work "
+           "completion:: Fail sending string %s\n", buff );
     return -1;
   }
 
@@ -103,27 +104,41 @@ int read_data_block(int cport_nr, char* t){
   int m;
 
   if(read_data(cport_nr,2,buff1) == -1){
-    printf("read_block_data:read_data: Fail reading starting character for received data block\n");
+    printf("read_block_data:read_data: Fail reading starting "
+            "character for received data block\n");
     return -1;
   }
 
   if(buff1[0] != '#'){
-    printf("read_block_data: Unexpected starting character for received data block: %c\n", buff1[0]);
+    printf("read_block_data: Unexpected starting character for "
+           "received data block: %c\n", buff1[0]);
     return -1;
   }
-  int num_size = char_to_int(buff1[1]); // make a check for char_to_int
+  int num_size = char_to_int(buff1[1]);
+
+  if(num_size == -1){
+    printf("read_block_data:char_to_int: Block size is bad. Get %c\n",buff1[1]);
+    return -1;
+  }
 
   char buff2[num_size];
 
   if(read_data(cport_nr,num_size,buff2) == -1){
-    printf("read_block_data:read_data: Fail reading %d bytes of data block size\n",num_size);
+    printf("read_block_data:read_data: Fail reading %d bytes of data block size\n",
+            num_size);
     return -1;
   }
 
-  int size = 0;
+  int size, tmp = 0;
   m = 0;
   while(m < num_size){
-    size = size * 10 + char_to_int(buff2[m]); // make a cjeck for char_to_int
+    tmp = char_to_int(buff2[m]);
+    if(tmp == -1){
+      printf("read_block_data:char_to_int: Element %d of block is bad. Get %c\n",
+             m,buff2[m]);
+      return -1;
+    }
+    size = size * 10 + tmp;
     m++;
   }
 
@@ -133,12 +148,14 @@ int read_data_block(int cport_nr, char* t){
   }
 
   if(read_data(cport_nr,1,buff1)){
-    printf("read_block_data:read_data: Fail reading ending character for received data block\n");
+    printf("read_block_data:read_data: Fail reading ending character"
+            "for received data block\n");
     return -1;
   }
 
   if(buff1[0] != '\n'){
-    printf("read_block_data: Unexpected ending character for received data block: %c\n", buff1[0]);
+    printf("read_block_data: Unexpected ending character for received"
+            "data block: %c\n", buff1[0]);
     return -1;
   }
 
