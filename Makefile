@@ -66,6 +66,7 @@ all: directories $(TARGET)
 test: all $(TESTDIR)/demo.c
 	@echo Building test
 	$(HIDE)$(CC) -I$(PINCLUDES) -o $(TESTDIR)/demo.out -L $(BUILDDIR)  $(TESTDIR)/demo.c -lhp54600b
+	$(HIDE)$(CC) -I$(PINCLUDES) -o $(TESTDIR)/demo2.out -L $(BUILDDIR)  $(TESTDIR)/demo2.c -lhp54600b
 
 $(TARGET): $(OBJS)
 	@echo Linking $@
