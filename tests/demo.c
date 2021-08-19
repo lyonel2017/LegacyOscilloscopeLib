@@ -61,7 +61,7 @@ int gnureplot(char* t, int n, FILE* gnuplotPipe){
 int main(){
   char t[100];
   int m;
-  int cport_nr = RS232_OpenComport();
+  int cport_nr = RS232_OpenComport("/dev/ttyUSB0", b9600);
 
   if(cport_nr == -1){
     return 0;
@@ -76,11 +76,11 @@ int main(){
   set_ESE(cport_nr, 0);
   set_SRE(cport_nr, 4);
 
-  bsend(cport_nr,":AUTOSCALE;*OPC?\n");
+  if(bsend(cport_nr,":AUTOSCALE;*OPC?\n") != 0) return -1;
 
-  set_waveform_source(cport_nr, 2);
-  set_waveform_format(cport_nr);
-  set_waveform_points(cport_nr,100);
+  if(set_waveform_source(cport_nr, 1) != 0) return -1;
+  if(set_waveform_format(cport_nr) != 0) return -1;
+  if(set_waveform_points(cport_nr,100) != 0) return -1;
 
   if(get_waveform_data(cport_nr,t) != 0) return -1;
   gnuplot(t,100,gnuplotPipe);
