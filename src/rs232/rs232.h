@@ -1,7 +1,13 @@
 #ifndef rs232_INCLUDED
 #define rs232_INCLUDED
 
-int RS232_OpenComport();
+#include <termios.h>
+
+typedef enum baudrate {
+       b9600 = B9600
+} baudrate;
+
+int RS232_OpenComport(char* c, baudrate b);
 int RS232_PollComport(int, unsigned char *, int);
 int RS232_SendByte(int, unsigned char);
 int RS232_SendBuf(int, unsigned char *, int);

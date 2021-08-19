@@ -1,8 +1,14 @@
 #ifndef hp54600b_INCLUDED
 #define hp54600b_INCLUDED
 
+#include <termios.h>
+
 /* RS232 */
-int RS232_OpenComport();
+typedef enum baudrate {
+       b9600 = B9600
+} baudrate;
+
+int RS232_OpenComport(char* c, baudrate b);
 void RS232_CloseComport(int);
 
 /* Utils for communication */

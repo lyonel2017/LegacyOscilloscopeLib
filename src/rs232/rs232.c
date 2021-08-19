@@ -19,14 +19,15 @@
 
 #include "rs232.h"
 
-int RS232_OpenComport(){
+int RS232_OpenComport(char* c, baudrate b){
   int fd;
   struct termios new_port_settings;
 
-  fd = open("/dev/ttyS0", O_RDWR | O_NOCTTY | O_NDELAY);
+  fd = open(c, O_RDWR | O_NOCTTY | O_NDELAY);
 
   if(fd == -1){
-    perror("RS232_OpenComport:open: Unable to open /dev/ttyS0");
+    fprintf(stderr, "RS232_OpenComport:open: Unable to open %s: ", c);
+    perror("");
     return -1;
   }
 
@@ -35,7 +36,8 @@ int RS232_OpenComport(){
    */
   if(flock(fd, LOCK_EX | LOCK_NB) != 0){
     close(fd);
-    perror("RS232_OpenComport:flock: Another process has locked /dev/ttyS0");
+    fprintf(stderr, "RS232_OpenComport:flock: Another process has locked %s: ", c);
+    perror("");
     return -1;
   }
 
@@ -45,7 +47,8 @@ int RS232_OpenComport(){
   if(fcntl(fd, F_SETFL, 0) == -1){
     close(fd);
     flock(fd, LOCK_UN);  /* free the port so that others can use it. */
-    perror("RS232_OpenComport:fcntl: Unable to set F_SETFL to 0 for /dev/ttyS0");
+    fprintf(stderr, "RS232_OpenComport:fcntl: Unable to set F_SETFL to 0 for %s: ", c);
+    perror("");
     return -1;
   }
 
@@ -60,7 +63,7 @@ int RS232_OpenComport(){
     CLOCAL  : local connection, no modem contol
     CREAD   : enable receiving characters
   */
-  new_port_settings.c_cflag = B9600 | CS8 | CLOCAL | CREAD;
+  new_port_settings.c_cflag = b | CS8 | CLOCAL | CREAD;
 
   /*
    * Choosing Raw Input
@@ -90,7 +93,9 @@ int RS232_OpenComport(){
   if(tcsetattr(fd, TCSANOW, &new_port_settings) == -1){
     close(fd);
     flock(fd, LOCK_UN);  /* free the port so that others can use it. */
-    perror("RS232_OpenComport:tcsetattr: Unable to set portsettings of /dev/ttyS0");
+    fprintf(stderr,
+         "RS232_OpenComport:tcsetattr: Unable to set portsettings of %s: ", c);
+    perror("");
     return -1;
   }
 
@@ -99,7 +104,9 @@ int RS232_OpenComport(){
    */
   if(RS232_enableRTS(fd)==-1 ||  RS232_enableDTR(fd) == -1){
     flock(fd, LOCK_UN);  /* free the port so that others can use it. */
-    perror("RS232_OpenComport:RS232_enableRTS/RS232_enableDTR: Unable to set pin DTR and RTS to 1");
+    fprintf(stderr, "RS232_OpenComport:RS232_enableRTS/RS232_enableDTR: "
+                    "Unable to set pin DTR and RTS to 1 for %s: ", c);
+    perror("");
     return(-1);
   }
 
