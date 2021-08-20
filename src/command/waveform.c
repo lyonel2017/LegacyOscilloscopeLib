@@ -28,8 +28,17 @@ int set_waveform_source(int cport_nr, int c){
   }
 }
 
-int set_waveform_format(int cport_nr){
-  return bsend(cport_nr, ":WAVEFORM:FORMAT BYTE;*OPC?\n");
+int set_waveform_format(int cport_nr, format f){
+  switch(f){
+  case byte :
+    return bsend(cport_nr, ":WAVEFORM:FORMAT BYTE;*OPC?\n");
+  case word :
+    return bsend(cport_nr, ":WAVEFORM:FORMAT WORD;*OPC?\n");
+  case asc :
+    return bsend(cport_nr, ":WAVEFORM:FORMAT ASC;*OPC?\n");
+  default :
+    return -1;
+  }
 }
 
 int set_waveform_points(int cport_nr,int p){

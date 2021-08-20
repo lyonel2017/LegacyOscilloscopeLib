@@ -26,9 +26,11 @@ int set_ESE(int cport_nr, int bit);
 int set_SRE(int cport_nr, int bit);
 
 /* Waveform command */
+typedef enum format { asc, word, byte } format;
+
 int get_waveform_data(int, char*);
 int set_waveform_source(int, int);
-int set_waveform_format(int);
+int set_waveform_format(int, format f);
 int set_waveform_points(int,int);
 
 #endif
