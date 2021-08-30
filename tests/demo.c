@@ -59,8 +59,10 @@ int gnureplot(char* t, int n, FILE* gnuplotPipe){
 //error message handling https://fr.wikibooks.org/wiki/Programmation_C/Erreurs
 
 int main(){
-  char t[100];
-  int m;
+  char* t;
+  t = malloc(100);
+
+  int m, size;
   int cport_nr = RS232_OpenComport("/dev/ttyUSB0", b9600);
 
   if(cport_nr == -1){
@@ -79,21 +81,27 @@ int main(){
   if(bsend(cport_nr,":AUTOSCALE;*OPC?\n") != 0) return -1;
 
   if(set_waveform_source(cport_nr, 1) != 0) return -1;
-  if(set_waveform_format(cport_nr) != 0) return -1;
+  if(set_waveform_format(cport_nr, byte) != 0) return -1;
   if(set_waveform_points(cport_nr,100) != 0) return -1;
 
-  if(get_waveform_data(cport_nr,t) != 0) return -1;
-  gnuplot(t,100,gnuplotPipe);
+  size = get_waveform_data(cport_nr,&t);
+  if(size < 0) return -1;
+
+  gnuplot(t,size,gnuplotPipe);
 
   int i = 0;
   while(i < 10){
-    if(get_waveform_data(cport_nr,t) != 0) return -1;
-    gnureplot(t,100,gnuplotPipe);
+    size = get_waveform_data(cport_nr,&t);
+    if(size < 0) return -1;
+    gnureplot(t,size,gnuplotPipe);
     i++;
   }
+
   closegnuplot(gnuplotPipe);
 
   RS232_CloseComport(cport_nr);
+
+  free(t);
 
   return(0);
 }
