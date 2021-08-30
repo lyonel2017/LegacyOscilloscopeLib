@@ -6,13 +6,11 @@
 
 #include "waveform.h"
 
-int get_waveform_data(int cport_nr, char* t){
+int get_waveform_data(int cport_nr, char** t){
 
   if(send(cport_nr, ":WAVEFORM:DATA?\n") != 0) return -1;
 
-  if(read_data_block(cport_nr, t) != 0) return -1;
-
-  return 0;
+  return read_data_block(cport_nr, t);
 }
 
 int set_waveform_source(int cport_nr, int c){

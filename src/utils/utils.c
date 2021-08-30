@@ -99,7 +99,7 @@ int char_to_int(char c){
   }
 }
 
-int read_data_block(int cport_nr, char* t){
+int read_data_block(int cport_nr, char** t){
   char buff1[2];
   int m;
 
@@ -129,7 +129,8 @@ int read_data_block(int cport_nr, char* t){
     return -1;
   }
 
-  int size, tmp = 0;
+  int size = 0, tmp = 0;
+
   m = 0;
   while(m < num_size){
     tmp = char_to_int(buff2[m]);
@@ -142,7 +143,16 @@ int read_data_block(int cport_nr, char* t){
     m++;
   }
 
-  if(read_data(cport_nr,size,t) == -1){
+  *t = realloc(*t,size); //use specific data structure to avoid calling always realloc
+
+  if (*t == NULL){
+    fprintf(stderr, "read_block_data:realloc: Fail realloc array for size %d: ",
+            size);
+    perror("");
+    return -1;
+  }
+
+  if(read_data(cport_nr,size,*t) == -1){
     printf("read_block_data:read_data: Fail reading %d bytes of data block\n",size);
     return -1;
   }
@@ -159,5 +169,5 @@ int read_data_block(int cport_nr, char* t){
     return -1;
   }
 
-  return 0;
+  return size;
 }
