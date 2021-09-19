@@ -7,7 +7,7 @@
 #include <hp54600b.h>
 
 int opengnuplot(FILE** gnuplotPipe){
-  *gnuplotPipe = popen ("gnuplot -persistent", "w");
+  *gnuplotPipe = popen ("gnuplot", "w");
 
   fprintf(*gnuplotPipe, "%s \n", "set title \"HP 54600B\"");
   fflush(*gnuplotPipe);
