@@ -33,4 +33,7 @@ int set_waveform_source(int, int);
 int set_waveform_format(int, format f);
 int set_waveform_points(int,int);
 
+/* Root command */
+int autoscale(int cport_nr);
+
 #endif
