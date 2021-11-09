@@ -20,7 +20,6 @@ int closegnuplot(FILE* gnuplotPipe){
   return 0;
 }
 
-//https://doc.ubuntu-fr.org/gnuplot
 int gnuplot(char* t, int n, FILE* gnuplotPipe){
   int i;
   FILE* temp = fopen("data.temp", "w");
@@ -38,7 +37,6 @@ int gnuplot(char* t, int n, FILE* gnuplotPipe){
   return 0;
 }
 
-//https://stackoverflow.com/questions/28443868/how-to-automatically-replot-a-graph-every-few-seconds-in-gnuplot
 int gnureplot(char* t, int n, FILE* gnuplotPipe){
   int i;
 
@@ -55,8 +53,6 @@ int gnureplot(char* t, int n, FILE* gnuplotPipe){
 
   return 0;
 }
-
-//error message handling https://fr.wikibooks.org/wiki/Programmation_C/Erreurs
 
 int main(){
   char* t;
