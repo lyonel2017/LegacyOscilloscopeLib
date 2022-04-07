@@ -2,11 +2,10 @@
 
 This project provides a library for communicating with a *HP54600B*
 oscilloscope over an RS-232 interface using a *HP54658A* mesurement/storage module.
-The library implement currently a small subset of the command support by
-the *HP54600B* oscilloscope.
+The library implement currently a small subset of the Standard Commands for Programmable Instruments (SCPI)
+support by the *HP54600B* oscilloscope.
 Documentation for the *HP54600B* and the supported command can be found
-[here](https://www.keysight.com/us/en/product/54600B/2-channel-100-mhz-oscilloscope.html)
-or in `/docs`.
+[here](https://www.keysight.com/us/en/product/54600B/2-channel-100-mhz-oscilloscope.html).
 
 The mesurement module has no controler stoping the communication
 when a command is processed and the command queue is full.
@@ -59,7 +58,7 @@ int main(){
   // We can send command to the oscilloscope, for example an autoscale, using function "send" and the
   // syntaxe given in the Programmers's Guide manual.
   if(send(cport_nr,":AUTOSCALE\n") != 0) return -1;
-  // But, we must wait to ensure the oscilliscope has process the command
+  // We must wait to ensure the oscilliscope has process the command
   usleep(1000000);
 
   // To avoid waiting:
@@ -112,3 +111,9 @@ int main(){
 }
 ```
 More examples can be found in `/tests`.
+
+## Intrument specification checks
+
+The library performe checks to ensures that send commands
+matches the specification of the *HP54600B* oscilloscope.
+(nb. of channel, baud rate, memory size, etc.).
