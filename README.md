@@ -73,7 +73,7 @@ int main(){
   // "bsend" is blocking until an operation confirmation is received within timeout.
   if(bsend(cport_nr,":AUTOSCALE;*OPC?\n") != 0) return -1;
 
-  // The library provides function for sending specific command.
+  // The library provides function for sending specific command:
   // Autoscale
   if(autoscale(cport_nr) != 0) return -1;
   // Set the channel from where we want the waveform data.
