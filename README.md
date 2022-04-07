@@ -52,11 +52,12 @@ int main(){
 
   if(cport_nr == -1) return -1;
 
-  // We set register CLS so we are in a known state : all parameter on the oscilloscope are set to default.
+  // We set register CLS so we are in a known state : all parameter on the oscilloscope
+  // are set to default.
   set_RST(cport_nr);
 
-  // We can send command to the oscilloscope, for example an autoscale, using function "send" and the
-  // syntaxe given in the Programmers's Guide manual.
+  // We can send command to the oscilloscope, for example an autoscale, using function "send"
+  // and the syntaxe given in the Programmers's Guide manual.
   if(send(cport_nr,":AUTOSCALE\n") != 0) return -1;
   // We must wait to ensure the oscilliscope has process the command
   usleep(1000000);
@@ -67,7 +68,8 @@ int main(){
   set_ESE(cport_nr, 0);
   set_SRE(cport_nr, 4);
 
-  // We can now send commands to the oscilloscope using function "bsend" with "*OPC?" added in sequence.
+  // We can now send commands to the oscilloscope using function "bsend" with "*OPC?"
+  // added in sequence.
   // "bsend" is blocking until an operation confirmation is received within timeout.
   if(bsend(cport_nr,":AUTOSCALE;*OPC?\n") != 0) return -1;
 
