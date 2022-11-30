@@ -1,7 +1,9 @@
 /*
-  List different source ____________________________________
-  http://man7.org/linux/man-pages/man4/tty_ioctl.4.html
+  Following interface is inspired by:
+  https://gitlab.com/Teuniz/RS-232/-/blob/master/rs232.c
 */
+
+/*https://gitlab.com/Teuniz/RS-232/-/blob/master/rs232.c*/
 
 #include <stdio.h>
 #include <fcntl.h>
@@ -71,7 +73,7 @@ int RS232_OpenComport(char* c, baudrate b){
   new_port_settings.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
 
   /*
-   * Choosing Raw Output
+°   * Choosing Raw Output
    */
   new_port_settings.c_oflag = ~OPOST;
 
@@ -107,7 +109,7 @@ int RS232_OpenComport(char* c, baudrate b){
     fprintf(stderr, "RS232_OpenComport:RS232_enableRTS/RS232_enableDTR: "
                     "Unable to set pin DTR and RTS to 1 for %s: ", c);
     perror("");
-    return(-1);
+    return -1;
   }
 
   /*
@@ -124,32 +126,32 @@ void RS232_CloseComport(int fd){
   return;
 }
 
-int RS232_PollComport(int fd, unsigned char *buf, int size){
+int RS232_PollComport(int fd, char *buf, int size){
   int n;
   n = read(fd, buf, size);
   if(n < 0)    {
     perror("RS232_PollComport:read");
     return -1;
   }
-  return(n);
+  return n;
 }
 
-int RS232_SendByte(int fd, unsigned char byte){
+int RS232_SendByte(int fd, const char byte){
   int n = write(fd, &byte, 1);
   if(n < 0){
     perror("RS232_SendByte:write");
     return -1;
   }
-  return(0);
+  return 0;
 }
 
-int RS232_SendBuf(int fd, unsigned char *buf, int size){
+int RS232_SendBuf(int fd, const char *buf, int size){
   int n = write(fd, buf, size);
   if(n < 0){
     perror("RS232_SendBuf:write");
     return -1;
   }
-  return(n);
+  return n;
 }
 
 int RS232_IsDCDEnabled(int fd){
@@ -160,8 +162,9 @@ int RS232_IsDCDEnabled(int fd){
     return -1;
   }
 
-  if(status&TIOCM_CAR) return(1);
-  else return(0);
+  if(status&TIOCM_CAR) return 1;
+
+  return 0;
 }
 
 int RS232_IsRINGEnabled(int fd){
@@ -172,8 +175,9 @@ int RS232_IsRINGEnabled(int fd){
     return -1;
   }
 
-  if(status&TIOCM_RNG) return(1);
-  else return(0);
+  if(status&TIOCM_RNG) return 1;
+
+  return 0;
 }
 
 int RS232_IsCTSEnabled(int fd){
@@ -184,8 +188,9 @@ int RS232_IsCTSEnabled(int fd){
     return -1;
   }
 
-  if(status&TIOCM_CTS) return(1);
-  else return(0);
+  if(status&TIOCM_CTS) return 1;
+
+  return 0;
 }
 
 int RS232_IsDSREnabled(int fd){
@@ -196,8 +201,9 @@ int RS232_IsDSREnabled(int fd){
     return -1;
   }
 
-  if(status&TIOCM_DSR) return(1);
-  else return(0);
+  if(status&TIOCM_DSR) return 1;
+
+  return 0;
 }
 
 int RS232_enableDTR(int fd){
@@ -213,9 +219,8 @@ int RS232_enableDTR(int fd){
   if(ioctl(fd, TIOCMSET, &status) == -1){
     perror("RS232_enableDTR:ioctl: unable to set portstatus");
     return -1;
-
   }
-  return 1;
+  return 0;
 }
 
 int RS232_disableDTR(int fd){
@@ -232,6 +237,7 @@ int RS232_disableDTR(int fd){
     perror("RS232_disableDTR:ioctl: unable to set portstatus");
     return -1;
   }
+  return 0;
 }
 
 int RS232_enableRTS(int fd){
@@ -248,6 +254,7 @@ int RS232_enableRTS(int fd){
     perror("RS232_enableRTS:ioctl: unable to set portstatus");
     return -1;
   }
+  return 0;
 }
 
 int RS232_disableRTS(int fd){
@@ -264,6 +271,7 @@ int RS232_disableRTS(int fd){
     perror("RS232_disableRTS:ioctl: unable to set portstatus");
     return -1;
   }
+  return 0;
 }
 
 void RS232_flushRX(int fd){

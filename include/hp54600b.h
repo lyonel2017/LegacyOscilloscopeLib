@@ -12,10 +12,10 @@ int RS232_OpenComport(char* c, baudrate b);
 void RS232_CloseComport(int);
 
 /* Utils for communication */
-int send(int, unsigned char*);
-int wsend(int, unsigned char*);
+int send(int, const char*);
+int wsend(int, const char*);
 int read_data(int, int, char*);
-int bsend(int, unsigned char*);
+int bsend(int, const char*);
 int char_to_int(char);
 int read_data_block(int, char**);
 
@@ -28,10 +28,10 @@ int set_SRE(int cport_nr, int bit);
 /* Waveform command */
 typedef enum format { asc, word, byte } format;
 
-int get_waveform_data(int, char**);
-int set_waveform_source(int, int);
-int set_waveform_format(int, format f);
-int set_waveform_points(int,int);
+int get_waveform_data(int cport_nr, char** c);
+int set_waveform_source(int cport_nr, int s);
+int set_waveform_format(int cport_nr, format f);
+int set_waveform_points(int cport_nr,int p);
 
 /* Root command */
 int autoscale(int cport_nr);

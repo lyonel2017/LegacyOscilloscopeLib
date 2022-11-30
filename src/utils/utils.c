@@ -9,7 +9,7 @@
 
 #define sleep 1000000
 
-int send(int cport_nr, unsigned char* buff){
+int send(int cport_nr, const char* buff){
   int n = 0;
   n = RS232_SendBuf(cport_nr, buff,strlen(buff));
   if(n < 0){
@@ -20,7 +20,7 @@ int send(int cport_nr, unsigned char* buff){
   return 0;
 }
 
-int wsend(int cport_nr, unsigned char* buff){
+int wsend(int cport_nr, const char* buff){
   int n = 0;
   n = RS232_SendBuf(cport_nr, buff,strlen(buff));
   if(n < 0){
@@ -59,7 +59,7 @@ int read_data (int cport_nr, int count, char* buff2){
   return 0;
 }
 
-int bsend(int cport_nr, unsigned char* buff){
+int bsend(int cport_nr, const char* buff){
   int n = 0;
   int m = 0;
   char buff2[3];

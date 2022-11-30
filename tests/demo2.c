@@ -78,7 +78,7 @@ int main(){
 
   int m, size;
 
-  int cport_nr = RS232_OpenComport("/dev/ttyUSB4", b9600);
+  int cport_nr = RS232_OpenComport("/dev/ttyUSB0", b9600);
 
   if(cport_nr == -1){
     return 0;
