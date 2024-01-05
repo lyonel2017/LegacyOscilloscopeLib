@@ -36,7 +36,7 @@ DEPS = $(OBJS:.o=.d)
 CC = gcc
 
 # OS specific part
-RM = rm -rf
+RM = rm -f
 RMDIR = rm -rf
 MKDIR = mkdir -p
 ERRIGNORE = 2>/dev/null
@@ -85,5 +85,5 @@ directories:
 clean:
 	$(HIDE)$(RMDIR) $(subst /,$(PSEP),$(TARGETDIRS)) $(ERRIGNORE)
 	$(HIDE)$(RM) $(BUILDDIR)/$(TARGET) $(ERRIGNORE)
-	$(HIDE)$(RM) $(TESTDIR)//demo.out $(ERRIGNORE)
+	$(HIDE)$(RM) $(TESTDIR)/demo.out $(ERRIGNORE)
 	@echo Cleaning done !
