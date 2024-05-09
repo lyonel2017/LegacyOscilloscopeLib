@@ -2,8 +2,8 @@
 
 This project provides a library for communicating with a *HP54600B*
 oscilloscope over an RS-232 interface using a *HP54658A* mesurement/storage module.
-The library implement currently a small subset of the Standard Commands for Programmable Instruments (SCPI)
-support by the *HP54600B* oscilloscope.
+The library implement currently a small subset of the Standard Commands for Programmable
+Instruments (SCPI) support by the *HP54600B* oscilloscope.
 Documentation for the *HP54600B* and the supported command can be found
 [here](https://www.keysight.com/us/en/product/54600B/2-channel-100-mhz-oscilloscope.html).
 

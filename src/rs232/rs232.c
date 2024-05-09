@@ -21,38 +21,42 @@
 
 #include "rs232.h"
 
-int RS232_OpenComport(char* c, baudrate b){
+int RS232_OpenComport(char* c, baudrate b)
+{
   int fd;
   struct termios new_port_settings;
 
   fd = open(c, O_RDWR | O_NOCTTY | O_NDELAY);
 
-  if(fd == -1){
-    fprintf(stderr, "RS232_OpenComport:open: Unable to open %s: ", c);
-    perror("");
-    return -1;
-  }
+  if(fd == -1)
+    {
+      fprintf(stderr, "RS232_OpenComport:open: Unable to open %s: ", c);
+      perror("");
+      return -1;
+    }
 
   /*
    * Lock access so that another process can't use the port
    */
-  if(flock(fd, LOCK_EX | LOCK_NB) != 0){
-    close(fd);
-    fprintf(stderr, "RS232_OpenComport:flock: Another process has locked %s: ", c);
-    perror("");
-    return -1;
-  }
+  if(flock(fd, LOCK_EX | LOCK_NB) != 0)
+    {
+      close(fd);
+      fprintf(stderr, "RS232_OpenComport:flock: Another process has locked %s: ", c);
+      perror("");
+      return -1;
+    }
 
   /*
    * Reading Data from the Port with normal (blocking) behavior,
    */
-  if(fcntl(fd, F_SETFL, 0) == -1){
-    close(fd);
-    flock(fd, LOCK_UN);  /* free the port so that others can use it. */
-    fprintf(stderr, "RS232_OpenComport:fcntl: Unable to set F_SETFL to 0 for %s: ", c);
-    perror("");
-    return -1;
-  }
+  if(fcntl(fd, F_SETFL, 0) == -1)
+    {
+      close(fd);
+      flock(fd, LOCK_UN);  /* free the port so that others can use it. */
+      fprintf(stderr, "RS232_OpenComport:fcntl: Unable to set F_SETFL to 0 for %s: ", c);
+      perror("");
+      return -1;
+    }
 
   /*
    * Init port settings
@@ -73,8 +77,8 @@ int RS232_OpenComport(char* c, baudrate b){
   new_port_settings.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
 
   /*
-°   * Choosing Raw Output
-   */
+    °   * Choosing Raw Output
+  */
   new_port_settings.c_oflag = ~OPOST;
 
   /*
@@ -92,25 +96,27 @@ int RS232_OpenComport(char* c, baudrate b){
   /*
    * Set the new options for the port
    */
-  if(tcsetattr(fd, TCSANOW, &new_port_settings) == -1){
-    close(fd);
-    flock(fd, LOCK_UN);  /* free the port so that others can use it. */
-    fprintf(stderr,
-         "RS232_OpenComport:tcsetattr: Unable to set portsettings of %s: ", c);
-    perror("");
-    return -1;
-  }
+  if(tcsetattr(fd, TCSANOW, &new_port_settings) == -1)
+    {
+      close(fd);
+      flock(fd, LOCK_UN);  /* free the port so that others can use it. */
+      fprintf(stderr,
+	      "RS232_OpenComport:tcsetattr: Unable to set portsettings of %s: ", c);
+      perror("");
+      return -1;
+    }
 
   /*
    * Set RST and DTR pin to 1
    */
-  if(RS232_enableRTS(fd)==-1 ||  RS232_enableDTR(fd) == -1){
-    flock(fd, LOCK_UN);  /* free the port so that others can use it. */
-    fprintf(stderr, "RS232_OpenComport:RS232_enableRTS/RS232_enableDTR: "
-                    "Unable to set pin DTR and RTS to 1 for %s: ", c);
-    perror("");
-    return -1;
-  }
+  if(RS232_enableRTS(fd)==-1 ||  RS232_enableDTR(fd) == -1)
+    {
+      flock(fd, LOCK_UN);  /* free the port so that others can use it. */
+      fprintf(stderr, "RS232_OpenComport:RS232_enableRTS/RS232_enableDTR: "
+	      "Unable to set pin DTR and RTS to 1 for %s: ", c);
+      perror("");
+      return -1;
+    }
 
   /*
    * Flush send and recv buffer
@@ -120,170 +126,200 @@ int RS232_OpenComport(char* c, baudrate b){
   return fd;
 }
 
-void RS232_CloseComport(int fd){
+void RS232_CloseComport(int fd)
+{
   close(fd);
   flock(fd, LOCK_UN);  /* free the port so that others can use it. */
   return;
 }
 
-int RS232_PollComport(int fd, char *buf, int size){
+int RS232_PollComport(int fd, char* buf, int size)
+{
   int n;
   n = read(fd, buf, size);
-  if(n < 0)    {
-    perror("RS232_PollComport:read");
-    return -1;
-  }
+  if(n < 0)
+    {
+      perror("RS232_PollComport:read");
+      return -1;
+    }
   return n;
 }
 
-int RS232_SendByte(int fd, const char byte){
+int RS232_SendByte(int fd, const char byte)
+{
   int n = write(fd, &byte, 1);
-  if(n < 0){
-    perror("RS232_SendByte:write");
-    return -1;
-  }
+  if(n < 0)
+    {
+      perror("RS232_SendByte:write");
+      return -1;
+    }
   return 0;
 }
 
-int RS232_SendBuf(int fd, const char *buf, int size){
+int RS232_SendBuf(int fd, const char* buf, int size)
+{
   int n = write(fd, buf, size);
-  if(n < 0){
-    perror("RS232_SendBuf:write");
-    return -1;
-  }
+  if(n < 0)
+    {
+      perror("RS232_SendBuf:write");
+      return -1;
+    }
   return n;
 }
 
-int RS232_IsDCDEnabled(int fd){
+int RS232_IsDCDEnabled(int fd)
+{
   int status;
 
-  if(ioctl(fd, TIOCMGET, &status) == -1){
-    perror("RS232_IsDCDEnabled:ioctl: unable to get port status");
-    return -1;
-  }
+  if(ioctl(fd, TIOCMGET, &status) == -1)
+    {
+      perror("RS232_IsDCDEnabled:ioctl: unable to get port status");
+      return -1;
+    }
 
   if(status&TIOCM_CAR) return 1;
 
   return 0;
 }
 
-int RS232_IsRINGEnabled(int fd){
+int RS232_IsRINGEnabled(int fd)
+{
   int status;
 
-  if(ioctl(fd, TIOCMGET, &status) == -1){
-    perror("RS232_IsRINGEnabled:ioctl: unable to get port status");
-    return -1;
-  }
+  if(ioctl(fd, TIOCMGET, &status) == -1)
+    {
+      perror("RS232_IsRINGEnabled:ioctl: unable to get port status");
+      return -1;
+    }
 
   if(status&TIOCM_RNG) return 1;
 
   return 0;
 }
 
-int RS232_IsCTSEnabled(int fd){
+int RS232_IsCTSEnabled(int fd)
+{
   int status;
 
-  if(ioctl(fd, TIOCMGET, &status) == -1){
-    perror("RS232_IsCTSEnabled:ioctl: unable to get port status");
-    return -1;
-  }
+  if(ioctl(fd, TIOCMGET, &status) == -1)
+    {
+      perror("RS232_IsCTSEnabled:ioctl: unable to get port status");
+      return -1;
+    }
 
   if(status&TIOCM_CTS) return 1;
 
   return 0;
 }
 
-int RS232_IsDSREnabled(int fd){
+int RS232_IsDSREnabled(int fd)
+{
   int status;
 
-  if(ioctl(fd, TIOCMGET, &status) == -1){
-    perror("RS232_IsDSREnabled:ioctl: unable to get port status");
-    return -1;
-  }
+  if(ioctl(fd, TIOCMGET, &status) == -1)
+    {
+      perror("RS232_IsDSREnabled:ioctl: unable to get port status");
+      return -1;
+    }
 
   if(status&TIOCM_DSR) return 1;
 
   return 0;
 }
 
-int RS232_enableDTR(int fd){
+int RS232_enableDTR(int fd)
+{
   int status;
 
-  if(ioctl(fd, TIOCMGET, &status) == -1){
-    perror("RS232_enableDTR:ioctl: unable to get ports tatus");
-    return -1;
-  }
+  if(ioctl(fd, TIOCMGET, &status) == -1)
+    {
+      perror("RS232_enableDTR:ioctl: unable to get ports tatus");
+      return -1;
+    }
 
   status |= TIOCM_DTR;    /* turn on DTR */
 
-  if(ioctl(fd, TIOCMSET, &status) == -1){
-    perror("RS232_enableDTR:ioctl: unable to set portstatus");
-    return -1;
-  }
+  if(ioctl(fd, TIOCMSET, &status) == -1)
+    {
+      perror("RS232_enableDTR:ioctl: unable to set portstatus");
+      return -1;
+    }
   return 0;
 }
 
-int RS232_disableDTR(int fd){
+int RS232_disableDTR(int fd)
+{
   int status;
 
-  if(ioctl(fd, TIOCMGET, &status) == -1){
-    perror("RS232_disableDTR:ioctl: unable to get portstatus");
-    return -1;
-  }
+  if(ioctl(fd, TIOCMGET, &status) == -1)
+    {
+      perror("RS232_disableDTR:ioctl: unable to get portstatus");
+      return -1;
+    }
 
   status &= ~TIOCM_DTR;    /* turn off DTR */
 
-  if(ioctl(fd, TIOCMSET, &status) == -1){
-    perror("RS232_disableDTR:ioctl: unable to set portstatus");
-    return -1;
-  }
+  if(ioctl(fd, TIOCMSET, &status) == -1)
+    {
+      perror("RS232_disableDTR:ioctl: unable to set portstatus");
+      return -1;
+    }
   return 0;
 }
 
-int RS232_enableRTS(int fd){
+int RS232_enableRTS(int fd)
+{
   int status;
 
-  if(ioctl(fd, TIOCMGET, &status) == -1){
-    perror("RS232_enableRTS:ioctl: unable to get portstatus");
-    return -1;
-  }
+  if(ioctl(fd, TIOCMGET, &status) == -1)
+    {
+      perror("RS232_enableRTS:ioctl: unable to get portstatus");
+      return -1;
+    }
 
   status |= TIOCM_RTS;    /* turn on RTS */
 
-  if(ioctl(fd, TIOCMSET, &status) == -1){
-    perror("RS232_enableRTS:ioctl: unable to set portstatus");
-    return -1;
-  }
+  if(ioctl(fd, TIOCMSET, &status) == -1)
+    {
+      perror("RS232_enableRTS:ioctl: unable to set portstatus");
+      return -1;
+    }
   return 0;
 }
 
-int RS232_disableRTS(int fd){
+int RS232_disableRTS(int fd)
+{
   int status;
 
-  if(ioctl(fd, TIOCMGET, &status) == -1){
-    perror("RS232_disableRTS:ioctl: unable to get portstatus");
-    return -1;
-  }
+  if(ioctl(fd, TIOCMGET, &status) == -1)
+    {
+      perror("RS232_disableRTS:ioctl: unable to get portstatus");
+      return -1;
+    }
 
   status &= ~TIOCM_RTS;    /* turn off RTS */
 
-  if(ioctl(fd, TIOCMSET, &status) == -1){
-    perror("RS232_disableRTS:ioctl: unable to set portstatus");
-    return -1;
-  }
+  if(ioctl(fd, TIOCMSET, &status) == -1)
+    {
+      perror("RS232_disableRTS:ioctl: unable to set portstatus");
+      return -1;
+    }
   return 0;
 }
 
-void RS232_flushRX(int fd){
+void RS232_flushRX(int fd)
+{
   tcflush(fd, TCIFLUSH);
 }
 
 
-void RS232_flushTX(int fd){
+void RS232_flushTX(int fd)
+{
   tcflush(fd, TCOFLUSH);
 }
 
 
-void RS232_flushRXTX(int fd){
+void RS232_flushRXTX(int fd)
+{
   tcflush(fd, TCIOFLUSH);
 }
